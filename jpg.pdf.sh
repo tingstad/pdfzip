@@ -49,7 +49,7 @@ echo "Commence byte hacking"
 
 xxd -g 2 -c 32 frank.zip | awk '
 /^000003c0/ {
-#     space  5 7  6 7  3 2    /Length is larger because of PK after End of Image (FF D9)
+#     space  5 7  6 7  3 2    /Length is larger because of PK after End of Image (FF D9)   TODO: remove Data descriptor?
     sub("20 3537 3637 3332 0a",
         "20 3537 3638 3333 0a")
 }
@@ -60,11 +60,11 @@ xxd -g 2 -c 32 frank.zip | awk '
 #         % > \n  % t  r e  a m
 }
 /^00000420/ {
-#   avoid newline: minimum required version 0a->0b
+#   avoid newline: minimum required version 0a->0b   TODO should match ver. in central dir
     sub("0304 0a00", "0304 0b00")
 }
 /^00000440/ {
-# replace extra fields with our own, 0x6375 ("uc"), unicode file comment:
+# replace extra fields with our own, 0x6375 ("uc"), unicode file comment:  TODO: add file comment (central dir file header) as fallback? ("If the CRC check fails, this Unicode Comment extra field SHOULD be ignored and the File Comment field in the header SHOULD be used instead."")
 #         U T len=9 (timestamp)            ux  11 (unix uid/gid)
     sub("55 5409 0003 fdf0 9c61 4586 a261 7578 0b00 0104 f501 0000 0414 0000",
         "75 6318 0001 01f0 9c61 0000 0000 0000 0000 0a3e 3e0a 7374 7265 616d")
@@ -90,4 +90,6 @@ echo "Wrote frank.zip.pdf"
 unzip -t frank.zip.pdf
 zip -T frank.zip.pdf
 echo "Use ghostscript (gs) to check PDF offsets etc"
+
+echo "zip -F frank.zip.pdf --out fixed.zip #to find more warnings/problems."
 
