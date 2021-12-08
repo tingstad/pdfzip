@@ -28,8 +28,7 @@ BEGIN {
     handle_byte()
 
     if (offset >= buffer_size) {
-        oct_byte = sprintf("\\%o", "0x" input[offset - buffer_size])
-        out = out "\\" oct_byte
+        out = out append(input[offset - buffer_size])
         out_buffer_count++
         delete input[offset - buffer_size]
     }
@@ -79,14 +78,17 @@ function update(pattern, replace) {
     }
     return !miss;
 }
+function append(hex_byte) {
+    oct_byte = sprintf("\\%o", "0x" hex_byte)
+    return "\\" oct_byte
+}
 END {
     starti = (offset >= buffer_size) ? offset - buffer_size + 1 : 0
     while (--buffer_size >= 0) {
         handle_byte()
     }
     for (i = starti; i < offset && i >= 0; i++) {
-        oct_byte = sprintf("\\%o", "0x" input[i])
-        out = out "\\" oct_byte
+        out = out append(input[i])
     }
     system("printf \"" out "\"")
 }
