@@ -58,12 +58,12 @@ function handle_byte() {
     }
 }
 function update(pattern, replace) {
-    len = split(pattern, src)
-    start = (offset >= buffer_size) ? offset - buffer_size : offset - len
+    pattern_len = split(pattern, src)
+    start = (offset >= buffer_size) ? offset - buffer_size : offset - pattern_len
     if (start < 0) return
     idx = start
     miss = 0
-    for (j = 1; j <= len; j++) {
+    for (j = 1; j <= pattern_len; j++) {
         if (input[idx++] != src[j]) {
             miss = 1
             break
@@ -72,7 +72,7 @@ function update(pattern, replace) {
     if (!miss) {
         split(replace, dst)
         idx = start
-        for (j = 1; j <= len; j++) {
+        for (j = 1; j <= pattern_len; j++) {
             input[idx++] = dst[j]
         }
     }
