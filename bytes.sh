@@ -38,29 +38,28 @@ BEGIN {
         out = ""
     }
 }
-function replace(from, to) {
-    op[commands++] = from "," to
+function replace(pattern, replacement) {
+    op[commands++] = pattern "," replacement
     if (commands == 1) {
         counter = 0
-        find = from
-        write = to
+        pattern_len = split(pattern, src)
+        split(replacement, dst)
     }
 }
 function handle_byte() {
-    if (!finished && update(find, write)) {
+    if (!finished && update()) {
         if (++counter < commands) {
             split(op[counter], arr, ",")
-            find = arr[1]
-            write = arr[2]
+            pattern_len = split(arr[1], src)
+            split(arr[2], dst)
         } else {
             finished = 1
         }
     }
 }
-function update(pattern, replace) {
-    pattern_len = split(pattern, src)
+function update() {
     start = (offset >= buffer_size) ? offset - buffer_size : offset - pattern_len
-    if (start < 0) return
+    if (start < 0) return 0
     idx = start
     miss = 0
     for (j = 1; j <= pattern_len; j++) {
@@ -70,7 +69,6 @@ function update(pattern, replace) {
         }
     }
     if (!miss) {
-        split(replace, dst)
         idx = start
         for (j = 1; j <= pattern_len; j++) {
             input[idx++] = dst[j]
