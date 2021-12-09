@@ -47,12 +47,12 @@ echo "Commence byte hacking"
 #00000440: 632e 6a70 6755 5409 0003 fdf0 9c61 4586 a261 7578 0b00 0104 f501 0000 0414 0000  c.jpgUT......aE..aux............
 #00000460: 00ff d8ff e000 104a 4649 4600 0101 0000 0100 0100 00ff db00 4300 0806 0607 0605  .......JFIF.............C.......
 
-xxd -g 2 -c 32 frank.zip | awk '
-/^000003c0/ {
-#     space  5 7  6 7  3 2    /Length is larger because of PK after End of Image (FF D9)   TODO: remove Data descriptor?
-    sub("20 3537 3637 3332 0a",
-        "20 3537 3638 3333 0a")
-}
+< frank.zip > modified.zip ./bytes.sh $(
+    #                L  e  n  g  t  h     5  7  6  7  3  2    /increased because of PK after End of Image (FF D9)   TODO: remove Data descriptor?
+    printf '_%s=%s' 4c_65_6e_67_74_68_20_35_37_36_37_33_32_0a \
+                    4c_65_6e_67_74_68_20_35_37_36_38_33_33_0a
+)
+xxd -g 2 -c 32 modified.zip | awk '
 /^00000400/ {
 #         > > \n  s t  r e  a m
     sub("3e 3e0a 7374 7265 616d",
