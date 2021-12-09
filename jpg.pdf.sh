@@ -66,7 +66,7 @@ xxd -g 2 -c 32 frank.zip | awk '
 /^00000440/ {
 # replace extra fields with our own, 0x6375 ("uc"), unicode file comment:  TODO: add file comment (central dir file header) as fallback? ("If the CRC check fails, this Unicode Comment extra field SHOULD be ignored and the File Comment field in the header SHOULD be used instead."")
 #         U T len=9 (timestamp)            ux  11 (unix uid/gid)
-    sub("55 5409 0003 fdf0 9c61 4586 a261 7578 0b00 0104 f501 0000 0414 0000",
+    sub("55 5409 00.. .... .... .... .... 7578 0b00 0104 f501 0000 0414 0000",
         "75 6318 0001 01f0 9c61 0000 0000 0000 0000 0a3e 3e0a 7374 7265 616d")
 #         u c 24   v. CRC32 CHK bla bla bla         \n > > \n  s t  r e  a m
 }
