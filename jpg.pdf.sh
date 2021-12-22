@@ -48,17 +48,16 @@ echo "Commence byte hacking"
 #00000460: 00ff d8ff e000 104a 4649 4600 0101 0000 0100 0100 00ff db00 4300 0806 0607 0605  .......JFIF.............C.......
 
 < frank.zip > modified.zip ./bytes.sh $(
-    #                L  e  n  g  t  h     5  7  6  7  3  2    /increased because of PK after End of Image (FF D9)   TODO: remove Data descriptor?
-    printf '_%s=%s' 4c_65_6e_67_74_68_20_35_37_36_37_33_32_0a \
-                    4c_65_6e_67_74_68_20_35_37_36_38_33_33_0a
+    #                 L  e  n  g  t  h     5  7  6  7  3  2    /increased because of PK after End of Image (FF D9)   TODO: remove Data descriptor?
+    printf '_%s=%s ' 4c_65_6e_67_74_68_20_35_37_36_37_33_32_0a \
+                     4c_65_6e_67_74_68_20_35_37_36_38_33_33_0a
+
+    #                \n  >  > \n  s  t  r  e  a  m
+    printf '_%s=%s ' 0a_3e_3e_0a_73_74_72_65_61_6d \
+                     0a_25_3e_0a_25_74_72_65_61_6d
+    #                \n  %  > \n  %  t  r  e  a  m
 )
 xxd -g 2 -c 32 modified.zip | awk '
-/^00000400/ {
-#         > > \n  s t  r e  a m
-    sub("3e 3e0a 7374 7265 616d",
-        "25 3e0a 2574 7265 616d")
-#         % > \n  % t  r e  a m
-}
 /^00000420/ {
 #   avoid newline: minimum required version 0a->0b   TODO should match ver. in central dir
     sub("0304 0a00", "0304 0b00")
