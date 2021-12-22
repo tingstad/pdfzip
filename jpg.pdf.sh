@@ -56,12 +56,13 @@ echo "Commence byte hacking"
     printf '_%s=%s ' 0a_3e_3e_0a_73_74_72_65_61_6d \
                      0a_25_3e_0a_25_74_72_65_61_6d
     #                \n  %  > \n  %  t  r  e  a  m
+
+    # avoid newline: minimum required version 0a->0b   TODO should match ver. in central dir
+    #                 P  K 03 04 10  0
+    printf '_%s=%s ' 50_4b_03_04_0a_00 \
+                     50_4b_03_04_0b_00 # 10=1.0 -> 11=1.1
 )
 xxd -g 2 -c 32 modified.zip | awk '
-/^00000420/ {
-#   avoid newline: minimum required version 0a->0b   TODO should match ver. in central dir
-    sub("0304 0a00", "0304 0b00")
-}
 /^00000440/ {
 # replace extra fields with our own, 0x6375 ("uc"), unicode file comment:  TODO: add file comment (central dir file header) as fallback? ("If the CRC check fails, this Unicode Comment extra field SHOULD be ignored and the File Comment field in the header SHOULD be used instead."")
 #         U T len=9 (timestamp)            ux  11 (unix uid/gid)
