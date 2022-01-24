@@ -1,0 +1,20 @@
+name: staging
+
+on:
+  push:
+    branches-ignore: [ main, master ]
+
+jobs:
+  testsh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: ./test/test.sh.bat
+      - run: ./test/test_sh.sh
+  testcmd:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: .\test\test.sh.bat
+        shell: cmd
+      - run: pwsh -File test\test_cmd.ps1
