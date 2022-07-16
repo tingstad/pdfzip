@@ -61,15 +61,15 @@ echo "Commence byte hacking"
     #                 P  K 03 04 10  0
     printf '_%s=%s ' 50_4b_03_04_0a_00 \
                      50_4b_03_04_0b_00 # 10=1.0 -> 11=1.1
+
+    # replace extra fields with our own, 0x6375 ("uc"), unicode file comment:  TODO: add file comment (central dir file header) as fallback? ("If the CRC check fails, this Unicode Comment extra field SHOULD be ignored and the File Comment field in the header SHOULD be used instead."")
+    #                 U T len=9 (timestamp)                  u x  11 (unix uid/gid)
+    printf '_%s=%s ' 55_54_09_00_xx_xx_xx_xx_xx_xx_xx_xx_xx_75_78_0b_00_01_04_f5_01_00_00_04_14_00_00 \
+                     75_63_18_00_01_01_f0_9c_61_00_00_00_00_00_00_00_00_0a_3e_3e_0a_73_74_72_65_61_6d
+    #                 u c  24    v. CRC32 CHK bla bla bla               \n  > >  \n  s  t  r  e  a  m
+
 )
 xxd -g 2 -c 32 modified.zip | awk '
-/^00000440/ {
-# replace extra fields with our own, 0x6375 ("uc"), unicode file comment:  TODO: add file comment (central dir file header) as fallback? ("If the CRC check fails, this Unicode Comment extra field SHOULD be ignored and the File Comment field in the header SHOULD be used instead."")
-#         U T len=9 (timestamp)            ux  11 (unix uid/gid)
-    sub("55 5409 00.. .... .... .... .... 7578 0b00 0104 f501 0000 0414 0000",
-        "75 6318 0001 01f0 9c61 0000 0000 0000 0000 0a3e 3e0a 7374 7265 616d")
-#         u c 24   v. CRC32 CHK bla bla bla         \n > > \n  s t  r e  a m
-}
 /^00000460/ {
 #     comment[JPEG_IMAGE_DATA...
 #00000460: 00ff d8ff e000 104a 4649 4600 0101 0000 0100 0100 00ff db00 4300 0806 0607 0605  .......JFIF.............C.......
