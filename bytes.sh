@@ -63,7 +63,7 @@ function update() {
     idx = start
     miss = 0
     for (j = 1; j <= pattern_len; j++) {
-        if (input[idx++] != src[j]) {
+        if (input[idx++] != src[j] && src[j] != "xx") {
             miss = 1
             break
         }
@@ -116,6 +116,9 @@ test() {
 
     assert "$(printf '%2345d' 0 | main _20_20_30=30_30_39 | cut -c 2340-)" \
                      '   009'
+
+    assert "$(printf '123' | main _xx_32_33=_31_30_33)" \
+                     '103' # wildcard
 
     echo OK
 }
