@@ -81,13 +81,13 @@ xxd -g 2 -c 32 modified.zip | awk '
 #          \n 5  7 7  9 7  2
 }
 { print }
-' | xxd -g 2 -c 32 -r > frank.zip.pdf
-echo "Wrote frank.zip.pdf"
+' | xxd -g 2 -c 32 -r > magic.zip.pdf
+echo "Wrote magic.zip.pdf"
 
-unzip -t frank.zip.pdf
-zip -T frank.zip.pdf
+unzip -t magic.zip.pdf
+zip -T magic.zip.pdf
 echo "Use ghostscript (gs) to check PDF offsets etc"
 echo "gs -dBATCH -dNOPAUSE -dPDFSTOPONERROR magic.zip.pdf"
 
-echo "zip -F frank.zip.pdf --out fixed.zip #to find more warnings/problems."
+echo "zip -F magic.zip.pdf --out fixed.zip #to find more warnings/problems."
 
