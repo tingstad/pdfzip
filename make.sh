@@ -25,7 +25,7 @@ dd bs=1 count=$((len-1)) if=part1.pdf of=begin.pdf
 
 # The zip command adds carriage returns to comment, which we don't want,
 # so replace temporarily with '=' (to keep byte count right):
-tr '\n' '=' < part2.pdf > part2.txt #FIXME: replace back
+tr '\n' '=' < part2.pdf > part2.txt
 zip -0 end.zip magic.jpg -z < part2.txt
 cp begin.pdf frank.zip
 dd if=end.zip >> frank.zip
@@ -34,7 +34,8 @@ zip -A frank.zip  #fix offset addresses after prepending data
 # replace '=' (3d) back to \n (0a):
 len=$(wc -c part2.pdf | awk '{ print $1 }')
 total=$(wc -c frank.zip | awk '{ print $1 }')
-xxd -c 1 frank.zip | awk -v line=$((total-len)) '{ if (NR>=line) sub(": 3d",": 0a"); print }' | xxd -c 1 -r > tmp && mv tmp frank.zip
+xxd -c 1 frank.zip | awk -v line=$((total-len)) '{ if (NR>=line) sub(": 3d",": 0a"); print }' \
+| xxd -c 1 -r > tmp && mv tmp frank.zip
 
 echo "Wrote frank.zip"
 
@@ -86,6 +87,7 @@ echo "Wrote frank.zip.pdf"
 unzip -t frank.zip.pdf
 zip -T frank.zip.pdf
 echo "Use ghostscript (gs) to check PDF offsets etc"
+echo "gs -dBATCH -dNOPAUSE -dPDFSTOPONERROR magic.zip.pdf"
 
 echo "zip -F frank.zip.pdf --out fixed.zip #to find more warnings/problems."
 
