@@ -29,6 +29,8 @@ BEGIN {
         if (arg[1] ~ /[ a-f0-9]+/)
             replace(arg[1], arg[2])
     }
+    for (i = 0; i < 256; i++)
+        hex_to_oct[sprintf("%02x", i)] = sprintf("%o", i)
 
     if (!buffer_size) buffer_size = 2000
 
@@ -91,8 +93,7 @@ function update() {
     return !miss;
 }
 function append(hex_byte) {
-    oct_byte = sprintf("\\%o", "0x" hex_byte)
-    return "\\" oct_byte
+    return "\\" hex_to_oct[hex_byte]
 }
 END {
     starti = (offset >= buffer_size) ? offset - buffer_size + 1 : 0
@@ -151,7 +152,7 @@ seq() { # [first] last
 }
 assert() {
     if [ "$1" != "$2" ]; then
-        >&2 printf 'FAIL:\n%s\n%s\n' "$1" "$2"
+        >&2 printf 'ERROR! Expected:\n%s\nbut got:\n%s\n' "$2" "$1"
         exit 1
     fi
 }
