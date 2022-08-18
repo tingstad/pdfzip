@@ -15,7 +15,6 @@ sed -n '/REPLACE/,/EOF/p' jpeg.pdf | sed /REPLACE/d >> part2.pdf
 dd if=part2.pdf >> pure.pdf
 
 echo "Wrote pure.pdf"
-open pure.pdf
 
 echo "Create frank.zip with part2.pdf as zipfile comment (-z)"
 [ -e frank.zip ] && rm frank.zip

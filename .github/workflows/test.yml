@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: >
+          ./bytes.sh test &&
+          /bin/sh make.sh &&
+          sudo apt-get update &&
+          sudo apt-get -y install ghostscript &&
+          gs -dBATCH -dNOPAUSE -dPDFSTOPONERROR magic.zip.pdf
+      - uses: actions/upload-artifact@v3
+        with:
+          name: the-file
+          path: magic.zip.pdf
+
