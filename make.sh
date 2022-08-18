@@ -15,7 +15,6 @@ sed -n '/REPLACE/,/EOF/p' jpeg.pdf | sed /REPLACE/d >> part2.pdf
 dd if=part2.pdf >> pure.pdf
 
 echo "Wrote pure.pdf"
-open pure.pdf
 
 echo "Create frank.zip with part2.pdf as zipfile comment (-z)"
 [ -e frank.zip ] && rm frank.zip
@@ -25,7 +24,7 @@ dd bs=1 count=$((len-1)) if=part1.pdf of=begin.pdf
 
 # The zip command adds carriage returns to comment, which we don't want,
 # so replace temporarily with '=' (to keep byte count right):
-tr '\n' '=' < part2.pdf > part2.txt #FIXME: replace back
+tr '\n' '=' < part2.pdf > part2.txt
 zip -0 end.zip magic.jpg -z < part2.txt
 cp begin.pdf frank.zip
 dd if=end.zip >> frank.zip
@@ -34,7 +33,8 @@ zip -A frank.zip  #fix offset addresses after prepending data
 # replace '=' (3d) back to \n (0a):
 len=$(wc -c part2.pdf | awk '{ print $1 }')
 total=$(wc -c frank.zip | awk '{ print $1 }')
-xxd -c 1 frank.zip | awk -v line=$((total-len)) '{ if (NR>=line) sub(": 3d",": 0a"); print }' | xxd -c 1 -r > tmp && mv tmp frank.zip
+xxd -c 1 frank.zip | awk -v line=$((total-len)) '{ if (NR>=line) sub(": 3d",": 0a"); print }' \
+| xxd -c 1 -r > tmp && mv tmp frank.zip
 
 echo "Wrote frank.zip"
 
@@ -62,20 +62,16 @@ echo "Commence byte hacking"
     printf '_%s=%s ' 50_4b_03_04_0a_00 \
                      50_4b_03_04_0b_00 # 10=1.0 -> 11=1.1
 
-    # replace extra fields with our own, 0x6375 ("uc"), unicode file comment:  TODO: add file comment (central dir file header) as fallback? ("If the CRC check fails, this Unicode Comment extra field SHOULD be ignored and the File Comment field in the header SHOULD be used instead."")
+    # replace extra fields with our own, 0x6375 ("uc"), unicode file comment:
+    # "If the CRC check fails, this Unicode Comment extra field SHOULD be ignored and the File Comment field in the header SHOULD be used instead."
+    # TODO: add file comment (central dir file header) as fallback?
     #                 U T len=9 (timestamp)                  u x  11 (unix uid/gid)
-    printf '_%s=%s ' 55_54_09_00_xx_xx_xx_xx_xx_xx_xx_xx_xx_75_78_0b_00_01_04_f5_01_00_00_04_14_00_00 \
-                     75_63_18_00_01_01_f0_9c_61_00_00_00_00_00_00_00_00_0a_3e_3e_0a_73_74_72_65_61_6d
-    #                 u c  24    v. CRC32 CHK bla bla bla               \n  > >  \n  s  t  r  e  a  m
+    printf '_%s=%s ' 55_54_09_00_xx_xx_xx_xx_xx_xx_xx_xx_xx_75_78_0b_00_xx_xx_xx_xx_xx_xx_xx_xx_xx_xx_xx \
+                     75_63_18_00_01_01_f0_9c_61_20_20_20_20_20_20_20_20_0a_3e_3e_0a_73_74_72_65_61_6d_0a
+    #                 u c  24    v. CRC32 CHK bla bla bla               \n  > >  \n  s  t  r  e  a  m \n
 
 )
 xxd -g 2 -c 32 modified.zip | awk '
-/^00000460/ {
-#     comment[JPEG_IMAGE_DATA...
-#00000460: 00ff d8ff e000 104a 4649 4600 0101 0000 0100 0100 00ff db00 4300 0806 0607 0605  .......JFIF.............C.......
-    sub(": 00ff",
-        ": 0aff")
-}
 /^0008d260/ {
 #          \n 5  7 7  8 0  5 <- xref address
 #0008d260: 0a35 3737 3830 350a 2525 454f 460a       .577805.%%EOF.
@@ -84,12 +80,13 @@ xxd -g 2 -c 32 modified.zip | awk '
 #          \n 5  7 7  9 7  2
 }
 { print }
-' | xxd -g 2 -c 32 -r > frank.zip.pdf
-echo "Wrote frank.zip.pdf"
+' | xxd -g 2 -c 32 -r > magic.zip.pdf
+echo "Wrote magic.zip.pdf"
 
-unzip -t frank.zip.pdf
-zip -T frank.zip.pdf
+unzip -t magic.zip.pdf
+zip -T magic.zip.pdf
 echo "Use ghostscript (gs) to check PDF offsets etc"
+echo "gs -dBATCH -dNOPAUSE -dPDFSTOPONERROR magic.zip.pdf"
 
-echo "zip -F frank.zip.pdf --out fixed.zip #to find more warnings/problems."
+echo "zip -F magic.zip.pdf --out fixed.zip #to find more warnings/problems."
 

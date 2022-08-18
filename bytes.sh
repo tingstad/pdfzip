@@ -1,4 +1,18 @@
 #!/bin/sh
+# Richard H. Tingstad
+#
+# bytes.sh uses POSIX shell utils to be a sort of "sed for binary".
+#
+# Using `xxd | sed/awk | xxd -r` is cool, but not flexible about byte positions.
+#
+# Currently, bytes.sh aims at doing a linear pass through the data, replacing matching byte sequences.
+#
+# It expects buffer_size to be >= any given byte pattern length, and will handle byte patterns one after the other.
+# Overlapping or repeating byte patterns is thus not a priority at the moment.
+#
+# buffer_size is set to 2000 for both input and output.
+#
+# (Scipt arguments and output buffer size could be restricted by {ARG_MAX}, "Maximum length of argument to the exec functions including environment data"; Minimum Acceptable Value: {_POSIX_ARG_MAX} Value: 4 096 )
 set -e
 
 main() {
@@ -15,6 +29,8 @@ BEGIN {
         if (arg[1] ~ /[ a-f0-9]+/)
             replace(arg[1], arg[2])
     }
+    for (i = 0; i < 256; i++)
+        hex_to_oct[sprintf("%02x", i)] = sprintf("%o", i)
 
     if (!buffer_size) buffer_size = 2000
 
@@ -77,8 +93,7 @@ function update() {
     return !miss;
 }
 function append(hex_byte) {
-    oct_byte = sprintf("\\%o", "0x" hex_byte)
-    return "\\" oct_byte
+    return "\\" hex_to_oct[hex_byte]
 }
 END {
     starti = (offset >= buffer_size) ? offset - buffer_size + 1 : 0
@@ -89,9 +104,6 @@ END {
         out = out append(input[i])
     }
     system("printf \"" out "\"")
-}
-function max(a, b) {
-    return (a > b) ? a : b;
 }
 ' "$@"
 }
@@ -108,8 +120,11 @@ test() {
     assert "$(printf '123' | main _31=34)" \
                      '423'
 
-    assert "$(printf '123' | main _31=33 _33=31)" \
-                     '321'
+    assert "$(printf '11122233311' | main _31=33 _33=31)" \
+                     '31122213311' # only first match replaced
+
+    assert "$(printf '11122233311' | main _32=32 _31=30)" \
+                     '11122233301' # "seek"
 
     assert "$(printf '%2345d' 0 | main)" \
            "$(printf '%2345d' 0)"
@@ -120,11 +135,24 @@ test() {
     assert "$(printf '123' | main _xx_32_33=_31_30_33)" \
                      '103' # wildcard
 
+    assert "$(seq 1050 3960 | main _32_30_30_30=_32_6f_6f_6f \
+                                   _33_30_30_30=_33_6f_6f_6f)" \
+           "$(seq 1050 1999 ; echo 2ooo ; \
+              seq 2001 2999 ; echo 3ooo ; seq 3001 3960)"
+
     echo OK
+}
+seq() { # [first] last
+    last=${2:-$1}
+    if [ $# -gt 1 ]; then i=$1; else i=1; fi
+    while [ $i -le $last ]; do
+        printf '%d\n' $i
+        i=$((i + 1))
+    done
 }
 assert() {
     if [ "$1" != "$2" ]; then
-        >&2 printf 'FAIL:\n%s\n%s\n' "$1" "$2"
+        >&2 printf 'ERROR! Expected:\n%s\nbut got:\n%s\n' "$2" "$1"
         exit 1
     fi
 }
