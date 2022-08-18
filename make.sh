@@ -67,8 +67,8 @@ echo "Commence byte hacking"
     # "If the CRC check fails, this Unicode Comment extra field SHOULD be ignored and the File Comment field in the header SHOULD be used instead."
     # TODO: add file comment (central dir file header) as fallback?
     #                 U T len=9 (timestamp)                  u x  11 (unix uid/gid)
-    printf '_%s=%s ' 55_54_09_00_xx_xx_xx_xx_xx_xx_xx_xx_xx_75_78_0b_00_01_04_f5_01_00_00_04_14_00_00_00 \
-                     75_63_18_00_01_01_f0_9c_61_00_00_00_00_00_00_00_00_0a_3e_3e_0a_73_74_72_65_61_6d_0a
+    printf '_%s=%s ' 55_54_09_00_xx_xx_xx_xx_xx_xx_xx_xx_xx_75_78_0b_00_xx_xx_xx_xx_xx_xx_xx_xx_xx_xx_xx \
+                     75_63_18_00_01_01_f0_9c_61_20_20_20_20_20_20_20_20_0a_3e_3e_0a_73_74_72_65_61_6d_0a
     #                 u c  24    v. CRC32 CHK bla bla bla               \n  > >  \n  s  t  r  e  a  m \n
 
 )
