@@ -581,6 +581,46 @@ Let's try to construct a minimal ZIP header. The [ZIP File Format Specification]
       extra field (variable size)
 ```
 
+<details><summary> CRC-32 implementation </summary><p>
+
+```shell
+# https://rosettacode.org/wiki/CRC-32#POSIX
+# @Author: Léa Gris <lea.gris@noiraude.net>
+crc32() {
+  crc=0xFFFFFFFF # The Initial CRC32 value
+  p=0xedb88320   # The CRC32 polynomial
+  r=0            # The polynomial reminder
+  c=''           # The current character
+  byte=0         # The byte value of the current character
+  i=0
+  while [ $((i+=1)) -le $1 ]; do
+    c="$(dd bs=1 count=1 2>/dev/null)"
+    if [ -n "$c" ]; then
+    byte=$(printf '%d' "'$c")  # Converts the character into its byte value
+    else byte=10; fi
+    r=$(((crc & 0xff) ^ byte)) # XOR LSB of CRC with current byte
+    # 8-bit lsb shift with XOR polynomial reminder when odd
+    for _ in _ _ _ _ _ _ _ _; do
+      t=$((r >> 1))
+      r=$(((r & 1) ? t ^ p : t))
+    done
+    crc=$(((crc >> 8) ^ r)) # XOR MSB of CRC with Reminder
+  done
+
+  # Output CRC32 integer XOR mask 32 bits
+  echo $((crc ^ 0xFFFFFFFF))
+}
+
+crc32hex() {
+    printf %s "$1" | crc32 ${#1} \
+        | xargs echo 'obase=16;' | bc \
+        | sed 's/../& /g; # split' \
+        | awk '{ for (i=1; i<=NF; i++) s = $i " " s; print s } # reverse'
+}
+```
+
+</p></details>
+
 We need to write bytes to a file. My understanding is that `\u`,`\x` are less portable than `printf`'s `\ddd` (octal) ([ref.](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/printf.html#tag_20_94_13)).
 
 ```shell
@@ -592,19 +632,22 @@ write() {
     done
 }
 create_zip_header() {
+    data='%PDF-1.1
+'
+    crc_32=$(crc32hex "$data")
+    test "$crc_32" = "A8 69 91 77 " || return 1
     # little-endian byte order:
     write  50 4b 03 04  # signature 'PK\03\04'
     write  0b           # version, avoiding 0a (Line Feed), so v=1.1 not 1.0
     write  00           # version upper byte, 0=MS-DOS and OS/2 compatible
     write  00 00 00 00  # compression method 0=uncompressed
     write  50 57 13 55  # last mod file time/date
-    write  a8 69 91 77  # crc-32
+    write  ${crc_32}    # crc-32
     write  09 00 00 00 09 00 00 00 # compressed/uncompressed size
     write  01 00        # file name length
     write  00 00        # extra field length
-    write  78           # file name, 78=x
-    write  25 50 44 46 2d 31 2e 31 0a  # file data: %PDF-1.1\n
-    #       %  P  D  F  -  1  .  1 \n
+    printf 'x'          # file name
+    printf '%s' "$data"
 }
 create_zip_header > header.zip
 ```
