@@ -160,6 +160,7 @@ trim_last_newline() {
 }
 cat <<FIRSTHALF | trim_last_newline > 1st_half.pdf
 %PDF-1.3
+%$(printf '\253\266\245\261\277\273')
 1 0 obj
   << /Type /Catalog
      /Pages 2 0 R
