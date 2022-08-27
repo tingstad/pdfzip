@@ -14,8 +14,4 @@ jobs:
           sudo apt-get update &&
           sudo apt-get -y install ghostscript &&
           gs -dBATCH -dNOPAUSE -dPDFSTOPONERROR magic0.zip.pdf
-      - uses: actions/upload-artifact@v3
-        with:
-          name: the-file
-          path: magic*.zip.pdf
 
