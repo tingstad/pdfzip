@@ -662,6 +662,28 @@ create_zip_header > header.zip
 
 That's it, a valid ZIP file header in 40 bytes (including `%PDF-1.1` data). It's not a valid zip _file_ without a Central directory, but it's a valid header.
 
+Let's complete the file with zip header:
+
+```shell
+file_header() {
+    cat header.zip
+    sed '1{/%PDF/d;}' 1st_half.pdf | trim_last_newline
+    cat image.zip
+    rm image.zip
+}
+file_header > magic.zip
+zip -A magic.zip
+end_body > 2nd_half.pdf
+tr '\n' '=' < 2nd_half.pdf > comment.txt
+zip -z magic.zip < comment.txt
+xref_offset=$(wc -c magic.zip | awk '{ print $1 }')
+xref_table magic.zip >> 2nd_half.pdf
+pdf_trailer >> 2nd_half.pdf
+add_archive_comment <2nd_half.pdf magic.zip
+correct_pdf < magic.zip > magic1.zip.pdf
+validate_zip magic1.zip.pdf
+```
+
 
 [1]: https://pkware.cachefly.net/webdocs/APPNOTE/APPNOTE-6.3.9.TXT
 [2]: https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf
