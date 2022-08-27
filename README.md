@@ -241,9 +241,7 @@ FIRSTHALF
 zip -0 image.zip magic.jpg
 
 # 2. Prepend 1st_half.pdf to zip:
-cp 1st_half.pdf magic.zip
-dd if=image.zip >> magic.zip
-rm image.zip
+cat 1st_half.pdf image.zip > magic.zip
 
 # 3. Adjust zip entry offsets after prepending data:
 zip -A magic.zip
@@ -259,9 +257,12 @@ We now have a valid ZIP file, but the PDF is both incomplete and invalid.
 First we need to finish the body part of the PDF:
 
 ```shell
-echo ""           > 2nd_half.pdf
-echo "endstream" >> 2nd_half.pdf
-echo "endobj"    >> 2nd_half.pdf
+end_body() {
+    echo ""
+    echo "endstream"
+    echo "endobj"
+}
+end_body > 2nd_half.pdf
 ```
 
 Then we need to add an xref table and a trailer.
@@ -282,6 +283,7 @@ Then we need to add an xref table and a trailer.
 > Following this line are the cross-reference entries themselves [...]
 >
 > There are two kinds of cross-reference entries: one for objects that are in use and another for objects that have been deleted and therefore are free. [...] The first entry in the table (object number 0) shall always be free
+>
 >— [PDF 1.7 specification][2]
 </p></details>
 
@@ -362,22 +364,28 @@ The file trailer can be pretty short:
 ```shell
 size=$(number_of_entries magic.zip)
 
-cat >> 2nd_half.pdf <<-TRAILER
+pdf_trailer() {
+    cat <<-TRAILER
 	trailer << /Root 1 0 R /Size ${size} >>
 	startxref
 	${xref_offset}
 	%%EOF
 TRAILER
+}
+pdf_trailer >> 2nd_half.pdf
 
 # add the final data to the file:
-tr '\n' '=' < 2nd_half.pdf > comment.txt
-zip -z magic.zip < comment.txt
+add_archive_comment() { file="$1"
+    tr '\n' '=' > comment.txt
+    zip -z "$file" < comment.txt
 
-# replace '=' (3d) back to \n (0a):
-len=$(wc -c comment.txt | awk '{ print $1 }')
-total=$(wc -c magic.zip | awk '{ print $1 }')
-xxd -c 1 magic.zip | awk -v line=$((total-len)) '{ if (NR>=line) sub(": 3d",": 0a"); print }' \
-| xxd -c 1 -r > tmp && mv tmp magic.zip
+    # replace '=' (3d) back to \n (0a):
+    len=$(wc -c comment.txt | awk '{ print $1 }')
+    total=$(wc -c "$file" | awk '{ print $1 }')
+    xxd -c 1 "$file" | awk -v line=$((total-len)) '{ if (NR>=line) sub(": 3d",": 0a"); print }' \
+    | xxd -c 1 -r > tmp && mv tmp "$file"
+}
+add_archive_comment <2nd_half.pdf magic.zip
 ```
 
 All the data has now been added. The file is valid ZIP, but not yet completely valid PDF.
@@ -436,7 +444,7 @@ The extra field is described as:
        Data Size - 2 bytes
 ```
 
-We have the following data (annotated):
+We currently have the following data (annotated):
 
 ```
 00000400: 0a 2f 42 69 74 73 50 65 72 43 6f 6d 70 6f 6e 65  ./BitsPerCompone
@@ -468,7 +476,7 @@ as an Info-ZIP field that "stores Unix UIDs/GIDs".
 
 </p></details>
 
-<details><summary> There is another suitable mapping we can use; 0x6375 — Info-ZIP Unicode Comment Extra Field. </summary><p>
+<details><summary> There is another suitable mapping we can use: 0x6375 — Info-ZIP Unicode Comment Extra Field. </summary><p>
 
 [Specified][1] as:
 ```
@@ -544,13 +552,13 @@ gs -dBATCH -dNOPAUSE -dPDFSTOPONERROR magic0.zip.pdf
 
 ## Minimal ZIP header
 
-Even though the file is valid, some applications struggle with opening the ZIP when the first bytes are not `PK`. How cool is a Proof of Concept if it doesn't work?
+Even though the file is valid, some applications struggle with opening the ZIP when the first bytes are not `PK`. How cool is a Proof of Concept if it often doesn't work?
 
 The PDF 1.7 [specification][2] states that:
 
 > The first line of a PDF file shall be a header consisting of the 5 characters %PDF– followed by a version number
 
-That does not leave much flexibility. The specs for [1.5][4] and [1.6][3] (and [1.4][5] and [1.3][6] but not [1.2][7]), however, say:
+That does not leave much flexibility. The specs for [1.5][4] and [1.6][3] (and [1.4][5] and [1.3][6], but not [1.2][7]), however, say:
 
 > The first line of a PDF file is a header identifying the version of the PDF specification to which the file conforms. For a file conforming to PDF version 1.5, the header should be
 >
