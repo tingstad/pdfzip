@@ -185,23 +185,30 @@ endobj
                   /BaseFont /Times-Roman
                >>
            >>
-      /XObject <</I1 5 0 R>>
+           /XObject <</I1 6 0 R>>
        >>
       /Contents 4 0 R
+      /Annots [ 5 0 R ]
   >>
 endobj
 
 4 0 obj
-  << /Length 360 >>
+  << /Length 671 >>
 stream
   BT
     /F1 14 Tf
-    % 842 - 50 - 18 = 774
-    50 730 Td
+    75 710 Td
     30 TL
+    0.12549 0.129412 0.133333 rg
     (Hello, World!) Tj
-    (This file is both a valid PDF and zip file.) '
-    (Thank you) '
+    (This file is both a valid PDF and ZIP file, with common content.) '
+    (Rename the file extension to .ZIP and see what lies inside.) '
+    (For more details, see:) '
+    0.2 0.4 0.8 rg
+    (https://github.com/tingstad/pdfzip) '
+    0.12549 0.129412 0.133333 rg
+    (Best regards,) '
+    (Richard H. Tingstad) '
   ET
   q
     600 0 0 900 50 -300 cm % sx 0 0 sy tx ty
@@ -221,6 +228,17 @@ endstream
 endobj
 
 5 0 obj
+ << /Type /Annot
+    /Subtype /Link
+    /Rect [ 70 582 275 606 ]
+    /A <<
+        /S /URI
+        /URI (https://github.com/tingstad/pdfzip)
+    >>
+ >>
+endobj
+
+6 0 obj
 <<
 /Name /I1
 /Type /XObject
