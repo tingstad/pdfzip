@@ -12,6 +12,8 @@ sed -n '/^```shell/,/^```$/{/^```/!p;}' <<"DOC" | /bin/sh -e
 8. [PDF trailer](#pdf-trailer)
 9. [Correcting bytes](#correcting-bytes)
 10. [Validate file](#validate-file)
+11. [Minimal ZIP header](#minimal-zip-header)
+12. [Conclusion](#conclusion)
 
 ## Summary
 
@@ -157,7 +159,7 @@ trim_last_newline() {
     awk 'NR>1{print s} {s=$0} END{printf(s)}'
 }
 cat <<FIRSTHALF | trim_last_newline > 1st_half.pdf
-%PDF-1.1
+%PDF-1.3
 1 0 obj
   << /Type /Catalog
      /Pages 2 0 R
@@ -552,7 +554,7 @@ gs -dBATCH -dNOPAUSE -dPDFSTOPONERROR magic0.zip.pdf
 
 ## Minimal ZIP header
 
-Even though the file is valid, some applications struggle with opening the ZIP when the first bytes are not `PK`. How cool is a Proof of Concept if it often doesn't work?
+Even though the file is valid, some applications struggle with opening the ZIP when the first bytes are not `PK` (magic bytes). How cool is a Proof of Concept if it often doesn't work?
 
 The PDF 1.7 [specification][2] states that:
 
@@ -629,7 +631,7 @@ crc32hex() {
 
 </p></details>
 
-We need to write bytes to a file. My understanding is that `\u`,`\x` are less portable than `printf`'s `\ddd` (octal) ([ref.](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/printf.html#tag_20_94_13)).
+We need to write bytes to a file. (My understanding is that `\u`,`\x` are less portable than `printf`'s `\ddd` (octal) ([ref.](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/printf.html#tag_20_94_13)).)
 
 ```shell
 write() {
@@ -640,10 +642,9 @@ write() {
     done
 }
 create_zip_header() {
-    data='%PDF-1.1
+    data='%PDF-1.3
 '
     crc_32=$(crc32hex "$data")
-    test "$crc_32" = "A8 69 91 77 " || return 1
     # little-endian byte order:
     write  50 4b 03 04  # signature 'PK\03\04'
     write  0b           # version, avoiding 0a (Line Feed), so v=1.1 not 1.0
@@ -660,7 +661,7 @@ create_zip_header() {
 create_zip_header > header.zip
 ```
 
-That's it, a valid ZIP file header in 40 bytes (including `%PDF-1.1` data). It's not a valid zip _file_ without a Central directory, but it's a valid header.
+That's it, a valid ZIP file header in 40 bytes (including `%PDF-1.3` data). It's not a valid zip _file_ without a Central directory, but it's a valid header.
 
 Let's complete the file with zip header:
 
@@ -683,6 +684,14 @@ add_archive_comment <2nd_half.pdf magic.zip
 correct_pdf < magic.zip > magic1.zip.pdf
 validate_zip magic1.zip.pdf
 ```
+
+## Conclusion
+
+We have created a valid PDF+ZIP file containing the same JPG file without duplication.
+
+What does this give us? ZIP files offer an interface for accessing archived files that is more available to most users than handling raw bytes. PDFs containing resized or otherwise transformed images may present the original image files in the ZIP archive.
+
+The technique has been documented in an executable README+Shell file.
 
 
 [1]: https://pkware.cachefly.net/webdocs/APPNOTE/APPNOTE-6.3.9.TXT
