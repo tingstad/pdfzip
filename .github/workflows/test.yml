@@ -17,5 +17,5 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: the-file
-          path: magic.zip.pdf
+          path: magic*.zip.pdf
 
