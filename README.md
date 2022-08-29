@@ -186,10 +186,18 @@ endobj
                   /BaseFont /Times-Roman
                >>
            >>
-           /XObject <</I1 6 0 R>>
+           /XObject <</I1 5 0 R>>
        >>
       /Contents 4 0 R
-      /Annots [ 5 0 R ]
+      /Annots [
+         << /Type /Annot
+            /Subtype /Link
+            /Rect [ 70 582 275 606 ]
+            /A <<
+                /S /URI
+                /URI (https://github.com/tingstad/pdfzip)
+            >>
+         >> ]
   >>
 endobj
 
@@ -229,17 +237,6 @@ endstream
 endobj
 
 5 0 obj
- << /Type /Annot
-    /Subtype /Link
-    /Rect [ 70 582 275 606 ]
-    /A <<
-        /S /URI
-        /URI (https://github.com/tingstad/pdfzip)
-    >>
- >>
-endobj
-
-6 0 obj
 <<
 /Name /I1
 /Type /XObject
