@@ -192,7 +192,7 @@ endobj
       /Annots [
          << /Type /Annot
             /Subtype /Link
-            /Rect [ 70 582 275 606 ]
+            /Rect [ 90 482 295 506 ]
             /A <<
                 /S /URI
                 /URI (https://github.com/tingstad/pdfzip)
@@ -206,7 +206,7 @@ endobj
 stream
   BT
     /F1 14 Tf
-    75 710 Td
+    95 610 Td
     30 TL
     0.12549 0.129412 0.133333 rg
     (Hello, World!) Tj
@@ -220,15 +220,19 @@ stream
     (Richard H. Tingstad) '
   ET
   q
-    600 0 0 900 50 -300 cm % sx 0 0 sy tx ty
-    0.1 0.4 0.6 0.4 re % x y w h
+    600 0 0 600 -200 100 cm
+    0.7 0 1.0 0.45 re
     W
     n
     /I1 Do
   Q
   q
-    300 0 0 450 100 350 cm
-    0.475 0.89 0.3 0.07 re
+    -400 0 0 400 360 300 cm
+    0.767698 0.640812 -0.640812 0.767698 0 0 cm
+    0.3 0.8 m
+    0.7 0.5  0.7 1 y
+    0.2 1  0.3 0.8 y
+    h
     W
     n
     /I1 Do
@@ -243,7 +247,7 @@ endobj
 /Subtype /Image
 /Width 1838
 /Height 2738
-/Length 576732
+/Length 336070
 /Filter /DCTDecode
 /ColorSpace /DeviceRGB
 /BitsPerComponent 8
@@ -413,7 +417,7 @@ All the data has now been added. The file is valid ZIP, but not yet completely v
 The PDF can't display the image, which is not so strange, the contents now look like this:
 
 ```
-/Length 576732
+/Length 336070
 /Filter /DCTDecode
 /ColorSpace /DeviceRGB
 /BitsPerComponent 8
@@ -520,10 +524,10 @@ I wrote a script, [bytes.sh](bytes.sh), to substitute byte sequences.
 ```shell
 correct_pdf() {
   ./bytes.sh $(
-    #                 L  e  n  g  t  h     5  7  6  7  3  2
-    printf '_%s=%s ' 4c_65_6e_67_74_68_20_35_37_36_37_33_32_0a \
-                     4c_65_6e_67_74_68_20_35_37_36_38_33_33_0a
-    # increased because of PK after End of Image (FF D9)   TODO: remove Data descriptor?
+    #                 L  e  n  g  t  h     3  3  6  0  7  0
+    printf '_%s=%s ' 4c_65_6e_67_74_68_20_33_33_36_30_37_30_0a \
+                     4c_65_6e_67_74_68_20_33_33_36_31_37_30_0a
+    # increased because of PK after End of Image (FF D9)
 
     #                \n  >  > \n  s  t  r  e  a  m
     printf '_%s=%s ' 0a_3e_3e_0a_73_74_72_65_61_6d \
