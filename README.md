@@ -260,7 +260,8 @@ FIRSTHALF
 
 ```shell
 # 1. Store jpg file in zip:
-zip -0 image.zip magic.jpg
+printf 'curious' > comment.txt
+zip -c -0 image.zip magic.jpg < comment.txt
 
 # 2. Prepend 1st_half.pdf to zip:
 cat 1st_half.pdf image.zip > magic.zip
@@ -526,7 +527,7 @@ correct_pdf() {
   ./bytes.sh $(
     #                 L  e  n  g  t  h     3  3  6  0  7  0
     printf '_%s=%s ' 4c_65_6e_67_74_68_20_33_33_36_30_37_30_0a \
-                     4c_65_6e_67_74_68_20_33_33_36_31_37_30_0a
+                     4c_65_6e_67_74_68_20_33_33_36_31_37_38_0a
     # increased because of PK after End of Image (FF D9)
 
     #                \n  >  > \n  s  t  r  e  a  m
@@ -540,9 +541,6 @@ correct_pdf() {
                      50_4b_03_04_0b_00 # 10=1.0 -> 11=1.1
 
     # replace extra fields with our own, 0x6375 ("uc"), unicode file comment:
-    # "If the CRC check fails, this Unicode Comment extra field SHOULD be ignored and the File
-    # Comment field in the header SHOULD be used instead."
-    # TODO: add file comment (central dir file header) as fallback?
     printf '_%s=%s ' \
       `# U T len=9 (timestamp)                  u x  11 (unix uid/gid)` \
         55_54_09_00_xx_xx_xx_xx_xx_xx_xx_xx_xx_75_78_0b_00_xx_xx_xx_xx_xx_xx_xx_xx_xx_xx_xx \
