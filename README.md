@@ -534,7 +534,7 @@ correct_pdf() {
                      0a_25_3e_0a_25_74_72_65_61_6d
     #                \n  %  > \n  %  t  r  e  a  m
 
-    # avoid newline: minimum required version 0a->0b   TODO should match ver. in central dir
+    # avoid newline: minimum required version 0a->0b
     #                 P  K 03 04 10  0
     printf '_%s=%s ' 50_4b_03_04_0a_00 \
                      50_4b_03_04_0b_00 # 10=1.0 -> 11=1.1
@@ -543,11 +543,19 @@ correct_pdf() {
     # "If the CRC check fails, this Unicode Comment extra field SHOULD be ignored and the File
     # Comment field in the header SHOULD be used instead."
     # TODO: add file comment (central dir file header) as fallback?
-    printf '_%s=%s' \
+    printf '_%s=%s ' \
       `# U T len=9 (timestamp)                  u x  11 (unix uid/gid)` \
         55_54_09_00_xx_xx_xx_xx_xx_xx_xx_xx_xx_75_78_0b_00_xx_xx_xx_xx_xx_xx_xx_xx_xx_xx_xx \
         75_63_18_00_01_01_f0_9c_61_20_20_20_20_20_20_20_20_0a_3e_3e_0a_73_74_72_65_61_6d_0a
        # u c  24    v. CRC32 CHK bla bla bla               \n  > >  \n  s  t  r  e  a  m \n
+
+    #                 P  K 01 02 = Central directory signature
+    #                 |  |  |  | 30 = made by spec v3.0
+    #                 |  |  |  |  | 03 = UNIX lines
+    #                 |  |  |  |  |  | 10 00 = v1.0 needed to extract
+    #                 |  |  |  |  |  |  |
+    printf '_%s=%s ' 50_4b_01_02_1e_03_0a_00 \
+                     50_4b_01_02_1e_03_0b_00 # 0a->0b to match ver. in local file header
   )
 }
 correct_pdf < magic.zip > magic0.zip.pdf
