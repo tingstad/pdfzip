@@ -21,8 +21,8 @@ BEGIN {
     for (i = 1; i < ARGC; i++) {
         str = ARGV[i]
         gsub("_", " ", str)
-        split(str, arg, "=")
-        if (! length(arg[2])) {
+        len = split(str, arg, "=")
+        if (len != 2 || ! length(arg[2])) {
             print "Invalid argument: " ARGV[i]
             exit 1
         }
@@ -59,7 +59,12 @@ function replace(pattern, replacement) {
     if (commands == 1) {
         counter = 0
         pattern_len = split(pattern, src)
-        split(replacement, dst)
+        replace_len = split(replacement, dst)
+        if (pattern_len != replace_len) {
+            printf("ERROR! Lengths differ:\n%s\n%s\n", pattern, replacement)
+            finished = 1
+            exit 1
+        }
     }
 }
 function handle_byte() {
