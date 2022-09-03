@@ -20,8 +20,8 @@ sed -n '/^```shell/,/^```$/{/^```/!p;}' <<"DOC" | /bin/sh -e
 Proof of Concept of a PDF file containing an image, which is also contained as a ZIP entry (not duplicated).
 The file is 100% valid PDF _and_ ZIP file.
 
-* [magic1.zip.pdf](magic1.zip.pdf)
-* [magic0.zip.pdf](magic0.zip.pdf) <sub>(no initial zip bytes, not all applications detect zip format)</sub>
+* [magic1.zip.pdf](https://github.com/tingstad/pdfzip/raw/master/magic1.zip.pdf)
+* [magic0.zip.pdf](https://github.com/tingstad/pdfzip/raw/master/magic0.zip.pdf) <sub>(no initial zip bytes, not all applications detect zip format)</sub>
 
 ## About this document
 
@@ -720,8 +720,8 @@ validate_zip magic1.zip.pdf
 
 It is possible to create a valid PDF+ZIP file containing the same JPG file without duplication:
 
-* [magic0.zip.pdf](magic0.zip.pdf) (no initial zip bytes)
-* [magic1.zip.pdf](magic1.zip.pdf) (with initial zip signature)
+* [magic0.zip.pdf](https://github.com/tingstad/pdfzip/raw/master/magic0.zip.pdf) (no initial zip bytes)
+* [magic1.zip.pdf](https://github.com/tingstad/pdfzip/raw/master/magic1.zip.pdf) (with initial zip signature)
 
 What does this give us?
 ZIP files offer an interface for accessing archived files that is more accessible to most users than handling raw bytes.
