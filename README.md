@@ -20,6 +20,9 @@ sed -n '/^```shell/,/^```$/{/^```/!p;}' <<"DOC" | /bin/sh -e
 Proof of Concept of a PDF file containing an image, which is also contained as a ZIP entry (not duplicated).
 The file is 100% valid PDF _and_ ZIP file.
 
+* [magic1.zip.pdf](magic1.zip.pdf)
+* [magic0.zip.pdf](magic0.zip.pdf) <sub>(no initial zip bytes, not all applications detect zip format)</sub>
+
 ## About this document
 
 This file explains how the zip/pdf file is created, and it is also an attempt at Literate Programming.
@@ -657,7 +660,8 @@ crc32hex() {
 
 </p></details>
 
-We need to write bytes to a file. (My understanding is that `\u`,`\x` are less portable than `printf`'s `\ddd` (octal) ([ref.](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/printf.html#tag_20_94_13)).)
+We need to write bytes to a file.
+(My understanding is that `\u`,`\x` are less portable than `printf`'s `\ddd` (octal) ([ref.](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/printf.html#tag_20_94_13)).)
 
 ```shell
 write() {
@@ -687,7 +691,8 @@ create_zip_header() {
 create_zip_header > header.zip
 ```
 
-That's it, a valid ZIP file header in 40 bytes (including `%PDF-1.3` data). It's not a valid zip _file_ without a Central directory, but it's a valid header.
+That's it, a valid ZIP file header in 40 bytes (including `%PDF-1.3` data).
+It's not a valid zip _file_ without a Central directory, but it's a valid header.
 
 Let's complete the file with zip header:
 
@@ -713,12 +718,19 @@ validate_zip magic1.zip.pdf
 
 ## Conclusion
 
-We have created a valid PDF+ZIP file containing the same JPG file without duplication.
+It is possible to create a valid PDF+ZIP file containing the same JPG file without duplication:
 
-What does this give us? ZIP files offer an interface for accessing archived files that is more available to most users than handling raw bytes. PDFs containing resized or otherwise transformed images may present the original image files in the ZIP archive.
+* [magic0.zip.pdf](magic0.zip.pdf) (no initial zip bytes)
+* [magic1.zip.pdf](magic1.zip.pdf) (with initial zip signature)
+
+What does this give us?
+ZIP files offer an interface for accessing archived files that is more accessible to most users than handling raw bytes.
+PDFs containing resized or otherwise transformed images may present the original image files in the ZIP archive.
 
 The technique has been documented in an executable README+Shell file.
+I mostly like the result[^1].
 
+[^1]: But I did sometimes miss a smarter (faster) build system like `make`[[ref](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/make.html)].
 
 [1]: https://pkware.cachefly.net/webdocs/APPNOTE/APPNOTE-6.3.9.TXT
 [2]: https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf
