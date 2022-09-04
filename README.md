@@ -150,6 +150,7 @@ This project a good example of what initially starts out as a couple of manual s
 
 Even if small or large parts of the code end up in other programming languages, I often *start out* in the shell.
 The shell is *"the glue language"*. The shell treats other languages and processes as "first class".
+(See also _[The Rule of Least Power](https://en.wikipedia.org/wiki/Rule_of_least_power)_.)
 
 </p></details>
 
