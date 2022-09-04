@@ -42,7 +42,7 @@ POSIX [specifies](https://pubs.opengroup.org/onlinepubs/9699919799/functions/exe
 > [ENOEXEC]: The new process image file has the appropriate access permission but has an unrecognized format.
 </p></details>
 
-This approach fits this project nicely because there's a lot of documentation relavant for different parts of the code.
+This approach fits this project nicely because there's a lot of documentation relevant for different parts of the code.
 Keeping it all intermixed makes it easily available and up to date.
 This helps myself as much as others.
 Written text is plausibly _the_ best way of preserving and sharing knowledge.
@@ -96,7 +96,7 @@ In fact, in some cases the opposite is true; this is known as _Lindy's Law_ ([wi
 
 > the future life expectancy of some non-perishable things, like a technology or an idea, is proportional to their current age
 
-The three mentioned technologies have been remarkable successfull, are still widely used, and will probably be supported for many years to come.
+The three mentioned technologies have been remarkable successful, are still widely used, and will probably be supported for many years to come.
 
 It can be said that:
 
@@ -431,7 +431,7 @@ streamPK^C^D
 ^@^@^@^@^@sI<82.Sq^\³GÜÌ^H^@ÜÌ^H^@>·^@^\^@magic.jpgUT>··^@[...]JFIF
 ```
 
-These `PK..` zip header bytes have to be hidden from the PDF data. Relavant parts from the PDF [spec][2] are:
+These `PK..` zip header bytes have to be hidden from the PDF data. Relevant parts from the PDF [spec][2] are:
 
 > Any occurrence of the PERCENT SIGN (25h) outside a string or stream introduces a comment. The comment
 > consists of all characters after the PERCENT SIGN and up to but not including the end of the line [...]
