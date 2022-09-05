@@ -372,7 +372,7 @@ zip -z magic.zip < comment.txt
 xref_offset=$(wc -c magic.zip | awk '{ print $1 }')
 ```
 
-The offset should not change with a new comment, because of fixed size ([spec][1]):
+The offset should not change with a new comment, because of fixed field size ([spec][1]):
 
 ```
         file comment length             2 bytes
