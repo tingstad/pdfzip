@@ -249,8 +249,8 @@ endobj
 /Name /I1
 /Type /XObject
 /Subtype /Image
-/Width 1838
-/Height 2738
+/Width 1024
+/Height 1024
 /Length 336070
 /Filter /DCTDecode
 /ColorSpace /DeviceRGB
